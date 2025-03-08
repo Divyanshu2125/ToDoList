@@ -1,10 +1,22 @@
-
 import React, { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks/store';
 import TaskInput from '../components/TaskInput';
 import TaskList from '../components/TaskList';
 import { fetchCurrentWeather } from '../store/slices/weatherSlice';
 import { motion } from 'framer-motion';
+
+// Function to get weather emoji based on description
+const getWeatherEmoji = (description: string): string => {
+  const lowerDesc = description.toLowerCase();
+  if (lowerDesc.includes("clear")) return "☀️";
+  if (lowerDesc.includes("cloud")) return "☁️";
+  if (lowerDesc.includes("rain")) return "🌧️";
+  if (lowerDesc.includes("thunderstorm")) return "⛈️";
+  if (lowerDesc.includes("drizzle")) return "🌦️";
+  if (lowerDesc.includes("snow")) return "❄️";
+  if (lowerDesc.includes("mist") || lowerDesc.includes("fog")) return "🌫️";
+  return "🌍"; // Default emoji
+};
 
 const Index: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -36,11 +48,11 @@ const Index: React.FC = () => {
         {!loading && current.condition && (
           <div className="flex items-center gap-2 text-sm bg-white dark:bg-todo-darker px-3 py-1 rounded-full shadow-sm">
             <span className="text-xl">
-              {current.icon || 
-               (current.condition === 'sunny' ? '☀️' : 
-               current.condition === 'partly cloudy' ? '⛅' : 
-               current.condition === 'cloudy' ? '☁️' : 
-               current.condition === 'rainy' ? '🌧️' : '⛈️')}
+              {current.icon ? (
+                <img src={current.icon} alt="Weather Icon" className="w-6 h-6" />
+              ) : (
+                getWeatherEmoji(current.condition) // Show emoji if no icon
+              )}
             </span>
             <span className="dark:text-gray-300">{current.temperature}°C</span>
           </div>
